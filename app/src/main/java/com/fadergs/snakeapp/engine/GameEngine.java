@@ -7,18 +7,26 @@ import com.fadergs.snakeapp.enums.TileType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class GameEngine {
     public static final int GameWidth = 28;
     public static final int GameHeight = 42;
 
+
     private List<Cordinate> walls = new ArrayList<>();
     private List<Cordinate> snake = new ArrayList<>();
+    private List<Cordinate> apples = new ArrayList<>();
 
     private Direction currentDirection = Direction.East;
 
     private GameState currentGameState = GameState.Running;
 
+    private Random random = new Random();
+
+    private Cordinate getSnakeHead() {
+        return snake.get(0);
+    }
 
     public GameEngine() {
 
@@ -27,6 +35,33 @@ public class GameEngine {
     public void initGame() {
         addSnake();
         addWalls();
+        addApples();
+    }
+
+    private void addApples() {
+        Cordinate cordinate = null;
+
+        boolean added = false;
+
+        while (!added) {
+            int x = 1 + random.nextInt(GameWidth - 2);
+            int y = 1 + random.nextInt(GameHeight - 2);
+
+            cordinate = new Cordinate(x, y);
+            boolean collision = false;
+
+            for (Cordinate s : snake) {
+                if (s.equals(cordinate)) {
+                    collision = true;
+                }
+            }
+
+            for (Cordinate a : apples) {
+                collision = true;
+            }
+            added = !collision;
+        }
+        apples.add(cordinate);
     }
 
     public void update() {
@@ -53,6 +88,25 @@ public class GameEngine {
             }
 
         }
+        //Check self collision
+        for (int i= 1 ; i< snake.size();i++){
+            if(getSnakeHead().equals(snake.get(i))){
+                currentGameState = GameState.Lost;
+                return;
+            }
+        }
+        //Check Apples
+        Cordinate appleToRemove = null;
+        for (Cordinate apple:apples ){
+            if(getSnakeHead().equals(apple)){
+                appleToRemove=apple;
+            }
+        }
+        if(appleToRemove!=null)
+        {
+            apples.remove(appleToRemove);
+            addApples();
+        }
     }
 
     public void addSnake() {
@@ -75,14 +129,20 @@ public class GameEngine {
             }
         }
 
-        for (Cordinate s : snake) {
-            map[s.getX()][s.getY()] = TileType.SnakeTail;
-        }
-        map[snake.get(0).getX()][snake.get(0).getY()] = TileType.SnakeHead;
-
         for (Cordinate wall : walls) {
             map[wall.getX()][wall.getY()] = TileType.Wall;
         }
+
+        for (Cordinate s : snake) {
+            map[s.getX()][s.getY()] = TileType.SnakeTail;
+        }
+
+        for ( Cordinate a : apples)
+        {
+            map[a.getX()][a.getY()] = TileType.Apple;
+        }
+
+        map[snake.get(0).getX()][snake.get(0).getY()] = TileType.SnakeHead;
 
         return map;
     }
@@ -102,7 +162,7 @@ public class GameEngine {
     }
 
     public void updateDirection(Direction newDirection) {
-        if (Math.abs(newDirection.ordinal() - currentDirection.ordinal()) %2 ==1){
+        if (Math.abs(newDirection.ordinal() - currentDirection.ordinal()) % 2 == 1) {
             currentDirection = newDirection;
         }
     }

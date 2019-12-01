@@ -17,8 +17,6 @@ public class MainActivity extends AppCompatActivity {
     private SnakeView snakeView;
     private final Handler handler = new Handler();
     private final long updateDelay = 125;
-    private float prevX, prevY;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
