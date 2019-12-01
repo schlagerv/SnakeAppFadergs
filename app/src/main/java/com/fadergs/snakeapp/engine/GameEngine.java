@@ -47,10 +47,10 @@ public class GameEngine {
         }
 
         // Check wall collision
-        for( Cordinate w: walls)
-        { if(snake.get(0).equals(w)){
-            currentGameState= GameState.Lost;
-        }
+        for (Cordinate w : walls) {
+            if (snake.get(0).equals(w)) {
+                currentGameState = GameState.Lost;
+            }
 
         }
     }
@@ -75,8 +75,7 @@ public class GameEngine {
             }
         }
 
-        for (Cordinate s : snake)
-        {
+        for (Cordinate s : snake) {
             map[s.getX()][s.getY()] = TileType.SnakeTail;
         }
         map[snake.get(0).getX()][snake.get(0).getY()] = TileType.SnakeHead;
@@ -92,15 +91,21 @@ public class GameEngine {
         return currentGameState;
     }
 
+
     private void updateSnake(int x, int y) {
         for (int i = snake.size() - 1; i > 0; i--) {
             snake.get(i).setX(snake.get(i - 1).getX());
             snake.get(i).setY(snake.get(i - 1).getY());
         }
-        snake.get(0).setX(snake.get(0).getX()+ x);
-        snake.get(0).setY(snake.get(0).getY()+ y);
+        snake.get(0).setX(snake.get(0).getX() + x);
+        snake.get(0).setY(snake.get(0).getY() + y);
     }
 
+    public void updateDirection(Direction newDirection) {
+        if (Math.abs(newDirection.ordinal() - currentDirection.ordinal()) %2 ==1){
+            currentDirection = newDirection;
+        }
+    }
 
     private void addWalls() {
         for (int x = 0; x < GameWidth; x++) {

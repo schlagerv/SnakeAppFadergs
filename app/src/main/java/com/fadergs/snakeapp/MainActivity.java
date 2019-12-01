@@ -6,7 +6,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.widget.Toast;
 
+import com.fadergs.snakeapp.classess.OnSwipeTouchListener;
 import com.fadergs.snakeapp.engine.GameEngine;
+import com.fadergs.snakeapp.enums.Direction;
 import com.fadergs.snakeapp.enums.GameState;
 import com.fadergs.snakeapp.views.SnakeView;
 
@@ -15,6 +17,7 @@ public class MainActivity extends AppCompatActivity {
     private SnakeView snakeView;
     private final Handler handler = new Handler();
     private final long updateDelay = 125;
+    private float prevX, prevY;
 
 
     @Override
@@ -25,6 +28,28 @@ public class MainActivity extends AppCompatActivity {
         gameEngine = new GameEngine();
         gameEngine.initGame();
         snakeView = (SnakeView) findViewById(R.id.snakeView);
+        snakeView.setOnTouchListener(new OnSwipeTouchListener(this){
+            @Override
+            public  void onSwipeBottom(){
+                gameEngine.updateDirection(Direction.South);
+
+            }
+            @Override
+            public  void onSwipeLeft(){
+                gameEngine.updateDirection(Direction.West);
+
+            }
+            @Override
+            public  void onSwipeRight(){
+                gameEngine.updateDirection(Direction.East);
+
+            }
+            @Override
+            public  void onSwipeTop(){
+                gameEngine.updateDirection(Direction.North);
+
+            }
+        });
 
         startUpdateHandler();
     }
@@ -51,4 +76,21 @@ public class MainActivity extends AppCompatActivity {
     private void onGameLost(){
         Toast.makeText(this,"You lost.", Toast.LENGTH_SHORT).show();
     }
+//
+//    @Override
+//    public boolean onTouch(View v, MotionEvent event) {
+//        switch (event.getAction()){
+//            case MotionEvent.ACTION_DOWN:
+//                prevX = event.getX();
+//                prevY = event.getY();
+//                break;
+//            case MotionEvent.ACTION_UP:
+//                float newX = event.getX();
+//                float newY = event.getY();
+//                break;
+//        }
+//
+//
+//        return true;
+//    }
 }
