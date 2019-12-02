@@ -1,5 +1,8 @@
 package com.fadergs.snakeapp.engine;
 
+import android.widget.TextView;
+
+import com.fadergs.snakeapp.R;
 import com.fadergs.snakeapp.classess.Cordinate;
 import com.fadergs.snakeapp.enums.Direction;
 import com.fadergs.snakeapp.enums.GameState;
@@ -9,20 +12,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import static com.fadergs.snakeapp.enums.Direction.East;
+
 public class GameEngine {
     public static final int GameWidth = 28;
     public static final int GameHeight = 42;
-
+    private int score=0;
 
     private List<Cordinate> walls = new ArrayList<>();
     private List<Cordinate> snake = new ArrayList<>();
     private List<Cordinate> apples = new ArrayList<>();
 
-    private Direction currentDirection = Direction.East;
+    private Direction currentDirection = East;
 
     private GameState currentGameState = GameState.Running;
 
     private Random random = new Random();
+    private  boolean increaseTail = false;
 
     private Cordinate getSnakeHead() {
         return snake.get(0);
@@ -33,9 +39,20 @@ public class GameEngine {
     }
 
     public void initGame() {
+//        score=0;
         addSnake();
         addWalls();
         addApples();
+    }
+
+    public void resetGame() {
+        currentGameState=GameState.Running;
+        currentDirection = East;
+        snake.clear();
+        walls.clear();
+        apples.clear();
+
+        initGame();
     }
 
     private void addApples() {
@@ -100,6 +117,9 @@ public class GameEngine {
         for (Cordinate apple:apples ){
             if(getSnakeHead().equals(apple)){
                 appleToRemove=apple;
+                increaseTail=true;
+                score += 50;
+
             }
         }
         if(appleToRemove!=null)
@@ -153,10 +173,19 @@ public class GameEngine {
 
 
     private void updateSnake(int x, int y) {
+        int newX = snake.get(snake.size()-1).getX();
+        int newY  = snake.get(snake.size()-1).getY();
+
         for (int i = snake.size() - 1; i > 0; i--) {
             snake.get(i).setX(snake.get(i - 1).getX());
             snake.get(i).setY(snake.get(i - 1).getY());
         }
+
+        if(increaseTail){
+            snake.add(new Cordinate(newX,newY));
+            increaseTail=false;
+        }
+
         snake.get(0).setX(snake.get(0).getX() + x);
         snake.get(0).setY(snake.get(0).getY() + y);
     }
@@ -179,6 +208,10 @@ public class GameEngine {
             walls.add(new Cordinate(0, y));
             walls.add(new Cordinate(GameWidth - 1, y));
         }
+    }
+
+    public int getScore(){
+        return score;
     }
 
 }

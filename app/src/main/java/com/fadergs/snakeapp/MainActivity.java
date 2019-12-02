@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fadergs.snakeapp.classess.OnSwipeTouchListener;
@@ -17,6 +18,8 @@ public class MainActivity extends AppCompatActivity {
     private SnakeView snakeView;
     private final Handler handler = new Handler();
     private final long updateDelay = 125;
+    private TextView points;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +29,8 @@ public class MainActivity extends AppCompatActivity {
         gameEngine = new GameEngine();
         gameEngine.initGame();
         snakeView = (SnakeView) findViewById(R.id.snakeView);
+        points = findViewById(R.id.pointsTxt);
+
         snakeView.setOnTouchListener(new OnSwipeTouchListener(this){
             @Override
             public  void onSwipeBottom(){
@@ -57,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 gameEngine.update();
+                points.setText("Points: "+ gameEngine.getScore());
 
                 if (gameEngine.getCurrentGameState() == GameState.Running) {
                     handler.postDelayed(this, updateDelay);
@@ -64,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
                 if(gameEngine.getCurrentGameState() == GameState.Lost)
                 {
                    onGameLost();
+
                 }
 
                 snakeView.setSnakeViewMap(gameEngine.getMap());
@@ -73,22 +80,7 @@ public class MainActivity extends AppCompatActivity {
     }
     private void onGameLost(){
         Toast.makeText(this,"You lost.", Toast.LENGTH_SHORT).show();
+
+       // gameEngine.resetGame();
     }
-//
-//    @Override
-//    public boolean onTouch(View v, MotionEvent event) {
-//        switch (event.getAction()){
-//            case MotionEvent.ACTION_DOWN:
-//                prevX = event.getX();
-//                prevY = event.getY();
-//                break;
-//            case MotionEvent.ACTION_UP:
-//                float newX = event.getX();
-//                float newY = event.getY();
-//                break;
-//        }
-//
-//
-//        return true;
-//    }
 }
